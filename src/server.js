@@ -9,8 +9,8 @@ const HOST = '0.0.0.0';
 
 // Cool trick for when promises or other complex callstack things are crashing & breaking:
 void process.on('unhandledRejection', (reason, p) => {
-    console.log(`Things got pretty major here! Big error:\n`+ p);
-    console.log(`That error happened because of:\n` + reason);
+	console.log(`Things got pretty major here! Big error:\n`+ p);
+	console.log(`That error happened because of:\n` + reason);
 });
 
 // Configure server security, based on documentation outlined here:
@@ -21,9 +21,9 @@ app.use(helmet());
 app.use(helmet.permittedCrossDomainPolicies());
 app.use(helmet.referrerPolicy());
 app.use(helmet.contentSecurityPolicy({
-    directives:{
-        defaultSrc:["'self'"]
-    }
+	directives:{
+		defaultSrc:["'self'"]
+	}
 }));
 
 // Configure API data receiving & sending
@@ -31,27 +31,39 @@ app.use(helmet.contentSecurityPolicy({
 app.use(express.json());
 app.use(express.urlencoded({extended:true}));
 
-//cors control who can connect the API
 // Configure CORS, add domains to the origin array as needed.
 // This is basically where you need to know what your ReactJS app is hosted on.
 // eg. React app at localhost:3000 and deployedApp.com can communicate to this API, 
 // but a React app at localhost:3001 or SomeRandomWebsite.com can NOT communicate to this API. 
 var corsOptions = {
-    origin: ["http://localhost:3000", "https://deployedApp.com"],
-    optionsSuccessStatus: 200
+	origin: ["http://localhost:3000", "https://deployedApp.com"],
+	optionsSuccessStatus: 200
 }
 app.use(cors(corsOptions));
 
+// ------------------------------------------ 
+// Config above
+// Routes below
+
 // Actual server behaviour
 app.get('/', (req, res) => {
-    console.log('ExpressJS API homepage received a request.');
+	console.log('ExpressJS API homepage received a request.');
   
-    const target = process.env.NODE_ENV || 'not yet set';
-    res.json({
+	const target = process.env.NODE_ENV || 'not yet set';
+
+
+	res.json({
         'message':`Hello ${target} world, woohoo!!`
     });
 
 });
+
+
+const importedBlogRouting = require('./Blogs/BlogsRoutes');
+app.use('/blogs', importedBlogRouting);
+//  localhost:55000/blogs/12314
+
+
 
 
 // Notice that we're not calling app.listen() anywhere in here.
@@ -60,5 +72,5 @@ app.get('/', (req, res) => {
 // Because everything is bundled into app, 
 // we can export that and a few other important variables.
 module.exports = {
-    app, PORT, HOST
+	app, PORT, HOST
 }
