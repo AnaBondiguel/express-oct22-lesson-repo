@@ -1,3 +1,5 @@
+
+
 const express = require('express');
 const app = express();
 const cors = require('cors');
@@ -42,29 +44,46 @@ var corsOptions = {
 app.use(cors(corsOptions));
 
 require('dotenv').config();
-console.log(process.env)
 
 // console.log("Firebase project ID is: " + process.env.FIREBASE_ADMIN_PROJECT_ID)
+
+const firebaseAdmin = require('firebase-admin');
+firebaseAdmin.initializeApp({
+    credential: firebaseAdmin.credential.cert({
+        "projectId": process.env.FIREBASE_ADMIN_PROJECT_ID,
+        "privateKey": process.env.FIREBASE_ADMIN_PRIVATE_KEY.replace(/\\n/g, '\n'),
+        "clientEmail":process.env.FIREBASE_ADMIN_CLIENT_EMAIL
+    })
+});
+
 
 const {databaseConnector} = require('./database');
 
 if (process.env.NODE_ENV != "test") {
-    const DATABASE_URI = process.env.DATABASE_URI || "mongodb://localhost:27017/ExpressLessonOctLocal";
-    databaseConnector(DATABASE_URI).then(() => {
-        // if database connection succeeded, log a nice success message 
-        console.log("Database connected, woohoo!");
-    }).catch(error => {
-        // if database connection failed, log the error
-        console.log(`
-        Some error occured, it was: 
-        ${error}
-        `)
-    });
+	const DATABASE_URI = process.env.DATABASE_URI || "mongodb://localhost:27017/ExpressLessonOctLocal";
+	databaseConnector(DATABASE_URI).then(() => {
+		// if database connection succeeded, log a nice success message 
+		console.log("Database connected, woohoo!");
+	}).catch(error => {
+		// if database connection failed, log the error
+		console.log(`
+		Some error occured, it was: 
+		${error}
+		`)
+	});
 } 
 
+// if (process.env.NODE_ENV == "test") {
+
+// } else if (process.env.NODE_ENV == "development") {
 
 
-// ------------------------------------------ 
+// } else {
+
+// }
+
+
+// ----------------------------------------------------- 
 // Config above
 // Routes below
 
@@ -81,7 +100,9 @@ app.get('/', (req, res) => {
 
 });
 
-
+// Any router must be "mounted" on to the app
+// So, we must import the routers and
+// tell the app to use those routers on a specific label
 const importedBlogRouting = require('./Blogs/BlogsRoutes');
 app.use('/blogs', importedBlogRouting);
 //  localhost:55000/blogs/12314

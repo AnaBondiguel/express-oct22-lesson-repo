@@ -15,9 +15,7 @@ routes.get('/', async (request, response) => {
 
     let postsResult = await getAllPosts();
 
-    response.json({
-        "message":`Received a request on ${request.originalUrl}`
-    });
+    response.json(postsResult);
 
     /*
     response.json(`Received a request on ${request.originalUrl}`);
@@ -25,7 +23,7 @@ routes.get('/', async (request, response) => {
 });
 
 // Set up route params with the colon before the name.
-routes.get('/', async (request, response) => {
+routes.get('/:blogID', async (request, response) => {
     
     let singleBlogPost = await getSpecificPost(request.params.blogID)
     response.json(singleBlogPost);
@@ -37,7 +35,7 @@ routes.get('/', async (request, response) => {
 });
 
 // Use Postman or another HTTP tool to visit a POST route.
-routes.post('/:blogID', async (request, response) => {
+routes.post('/', async (request, response) => {
 
     let creationResult = await createSpecificPost({
         postTitle: request.body.postTitle,
